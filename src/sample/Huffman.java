@@ -27,6 +27,7 @@ public class Huffman {
         makeCode(hm, root, "");       //Assign Code For Every Elements.
 
 
+
         String bin = convertToBinString(hm,text);
         writeFile(to,hm,bin);
 
@@ -74,6 +75,7 @@ public class Huffman {
             }
             int extra = (8 - bin.length()%8)%8;
             raf.writeInt(extra);
+//            System.out.println(extra);
             for(int i=0; i<extra; i++){
                 bin+='0';
             }
@@ -82,6 +84,8 @@ public class Huffman {
                 b += bin.charAt(i) == '1' ? 1 : 0;
                 if((i+1)%8 == 0){
                     raf.writeByte(b);
+//                    System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF))
+//                        .replace(' ', '0'));
                     b = 0;
                 }
                 b = (byte)(b<<1);
@@ -115,12 +119,16 @@ public class Huffman {
                     byte b = raf.readByte();
                     bin += String.format("%8s", Integer.toBinaryString(b & 0xFF))
                             .replace(' ', '0');
+//                    System.out.println(String.format("%8s", Integer.toBinaryString(b & 0xFF))
+//                            .replace(' ', '0'));
                 }catch (EOFException e){
                     break;
                 }
             }
 
-            bin = bin.substring(0,bin.length()-6);
+            bin = bin.substring(0,bin.length()-extra);
+
+//            System.out.println("read bin :"+bin);
 
             return bin;
 
@@ -138,6 +146,8 @@ public class Huffman {
             str += hm.get(string.charAt(i));
         }
 
+//        System.out.println("write bin :"+str);
+
         return str;
     }
 
@@ -147,7 +157,7 @@ public class Huffman {
         String readBIN = readFile(from,readHM);
 
         int start = 0;
-        for(int i=1;i<readBIN.length();i++){
+        for(int i=1;i<readBIN.length()+1;i++){
             for(Character c : readHM.keySet()){
                 if(readHM.get(c).equals(readBIN.substring(start,i))){
                     text+= c;
